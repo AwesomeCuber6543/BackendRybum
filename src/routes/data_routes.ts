@@ -22,6 +22,26 @@ router.post('/set-data', async (req: Request, res: Response, next: NextFunction)
     }
 });
 
+router.post('/update-data', async (req: Request, res: Response, next: NextFunction) => {
+    const data: string = req.body.data;
+    const email: string | undefined =  req.app.locals.user.email;
+
+    if (typeof  data !== 'string') {
+        res.status(500).json({ error: 'The data must be a string.' }); return;
+    }
+
+    if (email === undefined) {
+        res.status(500).json({ error: 'You must sign in to do that' }); return;
+    }
+
+    try {
+        await data_functions.updateData(email, data);
+        res.status(200).json({ success: 'The data was updated.' });
+    } catch (err) {
+        res.status(500).json({ error: err }); return;
+    }
+});
+
 router.post('/set-image', async (req: Request, res: Response, next: NextFunction) => {
     const profilepic: string = req.body.profilepic;
     const email: string | undefined =  req.app.locals.user.email;
@@ -38,6 +58,27 @@ router.post('/set-image', async (req: Request, res: Response, next: NextFunction
     try {
         await data_functions.saveImage(email, profilepic);
         res.status(200).json({ success: 'The image was submitted.' });
+    } catch (err) {
+        res.status(500).json({ error: err }); return;
+    }
+});
+
+router.post('/request-friend', async (req: Request, res: Response, next: NextFunction) => {
+    const friendusername: string = req.body.friendsusername;
+    const email: string | undefined =  req.app.locals.user.email;
+
+    if (typeof  friendusername !== 'string') {
+        // res.status(500).json({ error: 'The data must be a string.' }); return;
+        res.status(500).json({ error: `The data type is ${typeof friendusername}` }); return;
+    }
+
+    if (email === undefined) {
+        res.status(500).json({ error: 'You must sign in to do that' }); return;
+    }
+
+    try {
+        await data_functions.requestFriend(email, friendusername);
+        res.status(200).json({ success: 'The friend request was sent' });
     } catch (err) {
         res.status(500).json({ error: err }); return;
     }

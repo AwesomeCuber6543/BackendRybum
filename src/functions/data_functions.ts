@@ -28,6 +28,31 @@ const saveData = async function saveData(email: string, data: string): Promise<n
     }));
 };
 
+const updateData = async function updateData(email: string, data: string): Promise<null> {
+    return new Promise<null>(((resolve, reject) => {
+
+        const query = "UPDATE Data SET ? WHERE email=" + connection.escape(email);
+
+
+        const insertData = {
+            email: email,
+            data: data
+        }
+
+        connection.query(query, insertData, (err: MysqlError | null, result: OkPacket | null) => {
+            if (err != null) {
+                reject(err.message); return;
+            }
+
+            if (result != null) {
+                resolve(null); return;
+            } else {
+                reject('Unknown error 2 saving data to database.'); return
+            }
+        });
+    }));
+};
+
 
 const saveImage = async function saveImage(email: string, profilepic: string): Promise<null> {
     return new Promise<null>(((resolve, reject) => {
@@ -55,6 +80,37 @@ const saveImage = async function saveImage(email: string, profilepic: string): P
         });
     }));
 };
+
+const requestFriend = async function requestFriend(email: string, friendsusername: string): Promise<null> {
+    return new Promise<null>(((resolve, reject) => {
+        const query = "INSERT IGNORE INTO FriendsList SET ?"
+
+
+        const insertFriendRequest = {
+            email: email,
+            friendsusername: friendsusername,
+            value: 0,
+        }
+
+        connection.query(query, insertFriendRequest, (err: MysqlError | null, result: OkPacket | null) => {
+            if (err != null) {
+                reject(err.message); return;
+            }
+
+            if (result != null) {
+                if (result.affectedRows == 1) {
+                    resolve(null); return;
+                } else {
+                    reject('The username does not exist'); return
+                }
+            } else {
+                reject('Unknown error 2 saving friend request to database.'); return
+            }
+        });
+    }));
+};
+
+
 
 const getData = async function getData(email: string): Promise<string[]> {
     return new Promise<string[]>(((resolve, reject) => {
@@ -146,7 +202,9 @@ const getEmail = async function getEmail(email: string): Promise<string[]> {
 
 module.exports = {
     saveData: saveData,
+    updateData: updateData,
     saveImage: saveImage,
+    requestFriend: requestFriend,
     getData: getData,
     getImage: getImage,
     getUsername: getUsername,
