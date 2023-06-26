@@ -81,34 +81,65 @@ const saveImage = async function saveImage(email: string, profilepic: string): P
     }));
 };
 
+
 const requestFriend = async function requestFriend(email: string, friendsusername: string): Promise<null> {
     return new Promise<null>(((resolve, reject) => {
-        const query = "INSERT IGNORE INTO FriendsList SET ?"
+        const checkUserQuery = "SELECT 1 FROM Users WHERE BINARY username = ? LIMIT 1";
+        const checkFriendQuery = "SELECT 1 FROM FriendsList WHERE email = ? AND BINARY friendsusername = ? AND value = 1 LIMIT 1";
+        const insertFriendQuery = "INSERT IGNORE INTO FriendsList SET ?";
 
-
-        const insertFriendRequest = {
-            email: email,
-            friendsusername: friendsusername,
-            value: 0,
-        }
-
-        connection.query(query, insertFriendRequest, (err: MysqlError | null, result: OkPacket | null) => {
+        connection.query(checkUserQuery, friendsusername, (err: MysqlError | null, userResult: any) => {
             if (err != null) {
-                reject(err.message); return;
+                reject(err.message);
+                return;
             }
 
-            if (result != null) {
-                if (result.affectedRows == 1) {
-                    resolve(null); return;
-                } else {
-                    reject('The username does not exist'); return
-                }
-            } else {
-                reject('Unknown error 2 saving friend request to database.'); return
+            if (userResult.length === 0) {
+                reject("The username does not exist");
+                return;
             }
+
+            connection.query(checkFriendQuery, [email, friendsusername], (err: MysqlError | null, friendResult: any) => {
+                if (err != null) {
+                    reject(err.message);
+                    return;
+                }
+
+                if (friendResult.length > 0) {
+                    reject("You are already friends with this user");
+                    return;
+                }
+
+                const insertFriendRequest = {
+                    email: email,
+                    friendsusername: friendsusername,
+                    value: 0,
+                };
+
+                connection.query(insertFriendQuery, insertFriendRequest, (err: MysqlError | null, result: OkPacket | null) => {
+                    if (err != null) {
+                        reject(err.message);
+                        return;
+                    }
+
+                    if (result != null) {
+                        if (result.affectedRows === 1 || result.warningCount === 0) {
+                            resolve(null);
+                            return;
+                        } else {
+                            reject("Duplicate entry already exists");
+                            return;
+                        }
+                    } else {
+                        reject("Unknown error saving friend request to database.");
+                        return;
+                    }
+                });
+            });
         });
     }));
 };
+
 
 
 
