@@ -84,7 +84,6 @@ const saveImage = async function saveImage(email: string, profilepic: string): P
 
 const requestFriend = async function requestFriend(email: string, friendsusername: string): Promise<null> {
     return new Promise<null>(((resolve, reject) => {
-        //const checkUserQuery = "SELECT 1 FROM Users WHERE BINARY username = ? LIMIT 1";
         const checkUserQuery = "SELECT 1 FROM Users WHERE BINARY username = ? AND email <> ? LIMIT 1"
         const checkFriendQuery = "SELECT 1 FROM FriendsList WHERE email = ? AND BINARY friendsusername = ? AND value = 1 LIMIT 1";
         const insertFriendQuery = "INSERT IGNORE INTO FriendsList SET ?";
@@ -139,7 +138,7 @@ const requestFriend = async function requestFriend(email: string, friendsusernam
                                 resolve(null);
                                 return;
                             } else {
-                                reject("Duplicate entry already exists");
+                                reject("Already sent a friend request");
                                 return;
                             }
                         } else {
@@ -153,10 +152,26 @@ const requestFriend = async function requestFriend(email: string, friendsusernam
     }));
 };
 
+const getFriendRequests = async function getFriendRequests(username: string): Promise<string[]> {
+    return new Promise<string[]>((resolve, reject) => {
+        const query = `
+      SELECT u.username
+      FROM Users u
+      JOIN FriendsList f ON u.email = f.email
+      WHERE f.friendsusername = ? AND f.value = 0;
+    `;
 
+        connection.query(query, [username], (err: MysqlError | null, results: any) => {
+            if (err) {
+                reject(err.message);
+                return;
+            }
 
-
-
+            const usernames = results.map((row: any) => row.username);
+            resolve(usernames);
+        });
+    });
+};
 
 
 
@@ -252,6 +267,7 @@ module.exports = {
     saveData: saveData,
     updateData: updateData,
     saveImage: saveImage,
+    getFriendRequests: getFriendRequests,
     requestFriend: requestFriend,
     getData: getData,
     getImage: getImage,

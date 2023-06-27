@@ -84,6 +84,22 @@ router.post('/request-friend', async (req: Request, res: Response, next: NextFun
     }
 });
 
+router.get('/get-friendrequests', async (req: Request, res: Response, next: NextFunction) => {
+    const email: string | undefined =  req.app.locals.user.email;
+
+    if (email === undefined) {
+        res.status(500).json({ error: 'You must sign in to do that' }); return;
+    }
+
+    try {
+        const usernameInput = await data_functions.getUsername(email)
+        const friendRequestArray = await data_functions.getFriendRequests(usernameInput[usernameInput.length - 1]);
+        res.status(200).json({ friendRequests: friendRequestArray });
+    } catch (err) {
+        res.status(500).json({ error: err }); return;
+    }
+});
+
 
 
 router.get('/get-data', async (req: Request, res: Response, next: NextFunction) => {
