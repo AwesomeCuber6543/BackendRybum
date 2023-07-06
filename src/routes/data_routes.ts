@@ -84,6 +84,27 @@ router.post('/request-friend', async (req: Request, res: Response, next: NextFun
     }
 });
 
+router.post('/accept-friend', async (req: Request, res: Response, next: NextFunction) => {
+    const friendusername: string = req.body.friendsusername;
+    const email: string | undefined =  req.app.locals.user.email;
+
+    if (typeof  friendusername !== 'string') {
+        // res.status(500).json({ error: 'The data must be a string.' }); return;
+        res.status(500).json({ error: `The data type is ${typeof friendusername}` }); return;
+    }
+
+    if (email === undefined) {
+        res.status(500).json({ error: 'You must sign in to do that' }); return;
+    }
+
+    try {
+        await data_functions.acceptFriend(email, friendusername);
+        res.status(200).json({ success: 'Friend Request was Accepted' });
+    } catch (err) {
+        res.status(500).json({ error: err }); return;
+    }
+});
+
 router.get('/get-friendrequests', async (req: Request, res: Response, next: NextFunction) => {
     const email: string | undefined =  req.app.locals.user.email;
 
@@ -133,6 +154,22 @@ router.get('/get-image', async (req: Request, res: Response, next: NextFunction)
     }
 });
 
+router.post('/get-imagefromusername', async (req: Request, res: Response, next: NextFunction) => {
+    const username: string | undefined =  req.body.username;
+
+    if (username === undefined) {
+        res.status(500).json({ error: 'You must sign in to do that' }); return;
+    }
+
+    try {
+        const email = await data_functions.getEmailFromUsername(username)
+        const imageArray = await data_functions.getImage(email[0]);
+        res.status(200).json({ profilepic: imageArray });
+    } catch (err) {
+        res.status(500).json({ error: err }); return;
+    }
+});
+
 router.get('/get-username', async (req: Request, res: Response, next: NextFunction) => {
     const email: string | undefined =  req.app.locals.user.email;
 
@@ -143,6 +180,36 @@ router.get('/get-username', async (req: Request, res: Response, next: NextFuncti
     try {
         const username = await data_functions.getUsername(email);
         res.status(200).json({ username: username });
+    } catch (err) {
+        res.status(500).json({ error: err }); return;
+    }
+});
+
+router.get('/get-usernamefromemail', async (req: Request, res: Response, next: NextFunction) => {
+    const email: string | undefined =  req.body.email;
+
+    if (email === undefined) {
+        res.status(500).json({ error: 'Please give an email' }); return;
+    }
+
+    try {
+        const username = await data_functions.getUsernameFromEmail(email);
+        res.status(200).json({ username: username });
+    } catch (err) {
+        res.status(500).json({ error: err }); return;
+    }
+});
+
+router.get('/get-friends', async (req: Request, res: Response, next: NextFunction) => {
+    const email: string | undefined =  req.app.locals.user.email;
+
+    if (email === undefined) {
+        res.status(500).json({ error: 'You must sign in to do that' }); return;
+    }
+
+    try {
+        const friends = await data_functions.getFriends(email);
+        res.status(200).json({ friends: friends });
     } catch (err) {
         res.status(500).json({ error: err }); return;
     }
