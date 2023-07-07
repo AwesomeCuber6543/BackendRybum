@@ -105,6 +105,29 @@ router.post('/accept-friend', async (req: Request, res: Response, next: NextFunc
     }
 });
 
+router.post('/delete-friend', async (req: Request, res: Response, next: NextFunction) => {
+    const friendusername: string = req.body.friendsusername;
+    const email: string | undefined =  req.app.locals.user.email;
+
+    if (typeof  friendusername !== 'string') {
+        // res.status(500).json({ error: 'The data must be a string.' }); return;
+        res.status(500).json({ error: `The data type is ${typeof friendusername}` }); return;
+    }
+
+    if (email === undefined) {
+        res.status(500).json({ error: 'You must sign in to do that' }); return;
+    }
+
+    try {
+        const friendEmail = await data_functions.getEmailFromUsername(friendusername)
+        const signedInUsername = await data_functions.getUsernameFromEmail(email)
+        await data_functions.deleteFriend(email, friendusername, friendEmail[0], signedInUsername[0]);
+        res.status(200).json({ success: 'Friend was Deleted' });
+    } catch (err) {
+        res.status(500).json({ error: err }); return;
+    }
+});
+
 router.get('/get-friendrequests', async (req: Request, res: Response, next: NextFunction) => {
     const email: string | undefined =  req.app.locals.user.email;
 
@@ -229,5 +252,7 @@ router.get('/get-email', async (req: Request, res: Response, next: NextFunction)
         res.status(500).json({ error: err }); return;
     }
 });
+
+
 
 module.exports = router;

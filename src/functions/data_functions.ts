@@ -245,6 +245,37 @@ const getFriends = async function getFriends(email: string): Promise<string[]> {
     }));
 }
 
+const deleteFriend = async function deleteFriend(email: string, friendUsername: string, friendEmail: string, loggedUsername: string): Promise<null> {
+    return new Promise<null>(((resolve, reject) => {
+
+        const deleteQuery = `DELETE FROM FriendsList WHERE email=? AND friendsusername=? AND value=1`;
+
+        connection.query(deleteQuery, [email, friendUsername], (err: MysqlError | null, result: any) => {
+            if (err) {
+                reject(err.message);
+                return;
+            }
+
+            if(result.affectedRows !== 1) {
+                reject("You are not friends with the user"); return;
+            }
+
+            connection.query(deleteQuery, [friendEmail, loggedUsername], (err: MysqlError | null, result: any) => {
+                if (err) {
+                    reject(err.message); return;
+                }
+
+                if(result.affectedRows !== 1) {
+                    reject("You are not friends with the user"); return;
+                }
+
+                resolve(null); return;
+
+            });
+        });
+    }));
+};
+
 
 
 const getData = async function getData(email: string): Promise<string[]> {
@@ -386,6 +417,7 @@ module.exports = {
     getFriendRequests: getFriendRequests,
     getFriends: getFriends,
     requestFriend: requestFriend,
+    deleteFriend: deleteFriend,
     getData: getData,
     getImage: getImage,
     getUsername: getUsername,
