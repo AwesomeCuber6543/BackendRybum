@@ -441,7 +441,7 @@ const saveAccessToken = async function saveAccessToken(email: string, accessToke
 
         const insertImage = {
             email: email,
-            accessToken: accessToken
+            accesstoken: accessToken
         }
 
         connection.query(query, insertImage, (err: MysqlError | null, result: OkPacket | null) => {
@@ -468,7 +468,7 @@ const saveRefreshToken = async function saveRefreshToken(email: string, refreshT
 
         const insertImage = {
             email: email,
-            refreshToken: refreshToken
+            refreshtoken: refreshToken
         }
 
         connection.query(query, insertImage, (err: MysqlError | null, result: OkPacket | null) => {
@@ -497,7 +497,7 @@ const updateAccessToken = async function updateAccessToken(email: string, access
 
         const insertData = {
             email: email,
-            accessToken: accessToken
+            accesstoken: accessToken
         }
 
         connection.query(query, insertData, (err: MysqlError | null, result: OkPacket | null) => {
@@ -522,7 +522,7 @@ const updateRefreshToken = async function updateRefreshToken(email: string, refr
 
         const insertData = {
             email: email,
-            refreshToken: refreshToken
+            refreshtoken: refreshToken
         }
 
         connection.query(query, insertData, (err: MysqlError | null, result: OkPacket | null) => {

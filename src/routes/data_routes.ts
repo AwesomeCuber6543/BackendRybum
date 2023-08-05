@@ -22,11 +22,11 @@ router.post('/set-data', async (req: Request, res: Response, next: NextFunction)
     }
 });
 
-router.post('/set-accessToken', async (req: Request, res: Response, next: NextFunction) => {
-    const accessToken: string = req.body.data;
+router.post('/set-accesstoken', async (req: Request, res: Response, next: NextFunction) => {
+    const accesstoken: string = req.body.accesstoken;
     const email: string | undefined =  req.app.locals.user.email;
 
-    if (typeof  accessToken !== 'string') {
+    if (typeof  accesstoken !== 'string') {
         res.status(500).json({ error: 'The data must be a string.' }); return;
     }
 
@@ -35,18 +35,18 @@ router.post('/set-accessToken', async (req: Request, res: Response, next: NextFu
     }
 
     try {
-        await data_functions.saveAccessToken(email, accessToken);
+        await data_functions.saveAccessToken(email, accesstoken);
         res.status(200).json({ success: 'The access token was submitted.' });
     } catch (err) {
         res.status(500).json({ error: err }); return;
     }
 });
 
-router.post('/update-accessToken', async (req: Request, res: Response, next: NextFunction) => {
-    const accessToken: string = req.body.data;
+router.post('/update-accesstoken', async (req: Request, res: Response, next: NextFunction) => {
+    const accesstoken: string = req.body.accesstoken;
     const email: string | undefined =  req.app.locals.user.email;
 
-    if (typeof  accessToken !== 'string') {
+    if (typeof  accesstoken !== 'string') {
         res.status(500).json({ error: 'The data must be a string.' }); return;
     }
 
@@ -55,18 +55,18 @@ router.post('/update-accessToken', async (req: Request, res: Response, next: Nex
     }
 
     try {
-        await data_functions.updateAccessToken(email, accessToken);
-        res.status(200).json({ success: 'The access token was submitted.' });
+        await data_functions.updateAccessToken(email, accesstoken);
+        res.status(200).json({ success: 'The access token was updated.' });
     } catch (err) {
         res.status(500).json({ error: err }); return;
     }
 });
 
-router.post('/set-refreshToken', async (req: Request, res: Response, next: NextFunction) => {
-    const accessToken: string = req.body.data;
+router.post('/set-refreshtoken', async (req: Request, res: Response, next: NextFunction) => {
+    const refreshtoken: string = req.body.refreshtoken;
     const email: string | undefined =  req.app.locals.user.email;
 
-    if (typeof  accessToken !== 'string') {
+    if (typeof  refreshtoken !== 'string') {
         res.status(500).json({ error: 'The data must be a string.' }); return;
     }
 
@@ -75,18 +75,18 @@ router.post('/set-refreshToken', async (req: Request, res: Response, next: NextF
     }
 
     try {
-        await data_functions.saveRefreshToken(email, accessToken);
-        res.status(200).json({ success: 'The access token was submitted.' });
+        await data_functions.saveRefreshToken(email, refreshtoken);
+        res.status(200).json({ success: 'The refresh token was submitted.' });
     } catch (err) {
         res.status(500).json({ error: err }); return;
     }
 });
 
-router.post('/update-refreshToken', async (req: Request, res: Response, next: NextFunction) => {
-    const accessToken: string = req.body.data;
+router.post('/update-refreshtoken', async (req: Request, res: Response, next: NextFunction) => {
+    const refreshtoken: string = req.body.refreshtoken;
     const email: string | undefined =  req.app.locals.user.email;
 
-    if (typeof  accessToken !== 'string') {
+    if (typeof  refreshtoken !== 'string') {
         res.status(500).json({ error: 'The data must be a string.' }); return;
     }
 
@@ -95,8 +95,8 @@ router.post('/update-refreshToken', async (req: Request, res: Response, next: Ne
     }
 
     try {
-        await data_functions.updateRefreshToken(email, accessToken);
-        res.status(200).json({ success: 'The access token was submitted.' });
+        await data_functions.updateRefreshToken(email, refreshtoken);
+        res.status(200).json({ success: 'The refresh token was updated.' });
     } catch (err) {
         res.status(500).json({ error: err }); return;
     }
@@ -160,6 +160,36 @@ router.post('/set-dailypic', async (req: Request, res: Response, next: NextFunct
     try {
         await data_functions.saveDailyImage(email, dailyPic);
         res.status(200).json({ success: 'The daily picture was submitted.' });
+    } catch (err) {
+        res.status(500).json({ error: err }); return;
+    }
+});
+
+router.get('/get-accesstoken', async (req: Request, res: Response, next: NextFunction) => {
+    const email: string | undefined =  req.app.locals.user.email;
+
+    if (email === undefined) {
+        res.status(500).json({ error: 'You must sign in to do that' }); return;
+    }
+
+    try {
+        const accessTokenArray = await data_functions.getAccessToken(email);
+        res.status(200).json({ accessToken: accessTokenArray });
+    } catch (err) {
+        res.status(500).json({ error: err }); return;
+    }
+});
+
+router.get('/get-refreshtoken', async (req: Request, res: Response, next: NextFunction) => {
+    const email: string | undefined =  req.app.locals.user.email;
+
+    if (email === undefined) {
+        res.status(500).json({ error: 'You must sign in to do that' }); return;
+    }
+
+    try {
+        const refreshTokenArray = await data_functions.getRefreshToken(email);
+        res.status(200).json({ refreshToken: refreshTokenArray });
     } catch (err) {
         res.status(500).json({ error: err }); return;
     }
