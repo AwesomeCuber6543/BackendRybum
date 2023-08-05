@@ -409,6 +409,235 @@ const getEmail = async function getEmail(email: string): Promise<string[]> {
     }));
 };
 
+const resetURLs = async function resetURLs(randoUrl: String): Promise<null> {
+    return new Promise<null>(((resolve, reject) => {
+        const query = "UPDATE DailySongsUrl SET url=" + randoUrl;
+
+        connection.query(query, (err: MysqlError | null, results: any) => {
+            if (err != null) {
+                reject(err.message); return;
+            }
+            resolve(null); return;
+        });
+    }));
+};
+
+const resetDailyPics = async function resetDailyPics(defaultPic: String): Promise<null> {
+    return new Promise<null>(((resolve, reject) => {
+        const query = "UPDATE DailyPictures SET url=" + defaultPic;
+
+        connection.query(query, (err: MysqlError | null, results: any) => {
+            if (err != null) {
+                reject(err.message); return;
+            }
+            resolve(null); return;
+        });
+    }));
+};
+
+const saveAccessToken = async function saveAccessToken(email: string, accessToken: string): Promise<null> {
+    return new Promise<null>(((resolve, reject) => {
+        const query = "INSERT INTO AccessTokens SET ?"
+
+        const insertImage = {
+            email: email,
+            accessToken: accessToken
+        }
+
+        connection.query(query, insertImage, (err: MysqlError | null, result: OkPacket | null) => {
+            if (err != null) {
+                reject(err.message); return;
+            }
+
+            if (result != null) {
+                if (result.affectedRows == 1) {
+                    resolve(null); return;
+                } else {
+                    reject('Unknown error 1 saving access token to database.'); return
+                }
+            } else {
+                reject('Unknown error 2 saving access token to database.'); return
+            }
+        });
+    }));
+};
+
+const saveRefreshToken = async function saveRefreshToken(email: string, refreshToken: string): Promise<null> {
+    return new Promise<null>(((resolve, reject) => {
+        const query = "INSERT INTO RefreshTokens SET ?"
+
+        const insertImage = {
+            email: email,
+            refreshToken: refreshToken
+        }
+
+        connection.query(query, insertImage, (err: MysqlError | null, result: OkPacket | null) => {
+            if (err != null) {
+                reject(err.message); return;
+            }
+
+            if (result != null) {
+                if (result.affectedRows == 1) {
+                    resolve(null); return;
+                } else {
+                    reject('Unknown error 1 saving refresh token to database.'); return
+                }
+            } else {
+                reject('Unknown error 2 saving refresh token to database.'); return
+            }
+        });
+    }));
+};
+
+const updateAccessToken = async function updateAccessToken(email: string, accessToken: string): Promise<null> {
+    return new Promise<null>(((resolve, reject) => {
+
+        const query = "UPDATE AccessTokens SET ? WHERE email=" + connection.escape(email);
+
+
+        const insertData = {
+            email: email,
+            accessToken: accessToken
+        }
+
+        connection.query(query, insertData, (err: MysqlError | null, result: OkPacket | null) => {
+            if (err != null) {
+                reject(err.message); return;
+            }
+
+            if (result != null) {
+                resolve(null); return;
+            } else {
+                reject('Unknown error 2 saving access token to database.'); return
+            }
+        });
+    }));
+};
+
+const updateRefreshToken = async function updateRefreshToken(email: string, refreshToken: string): Promise<null> {
+    return new Promise<null>(((resolve, reject) => {
+
+        const query = "UPDATE RefreshTokens SET ? WHERE email=" + connection.escape(email);
+
+
+        const insertData = {
+            email: email,
+            refreshToken: refreshToken
+        }
+
+        connection.query(query, insertData, (err: MysqlError | null, result: OkPacket | null) => {
+            if (err != null) {
+                reject(err.message); return;
+            }
+
+            if (result != null) {
+                resolve(null); return;
+            } else {
+                reject('Unknown error 2 saving refresh token to database.'); return
+            }
+        });
+    }));
+};
+
+const saveUrl = async function saveUrl(email: string, url: string): Promise<null> {
+    return new Promise<null>(((resolve, reject) => {
+        const query = "INSERT INTO DailySongsUrl SET ?"
+
+        const insertURL = {
+            email: email,
+            url: url
+        }
+
+        connection.query(query, insertURL, (err: MysqlError | null, result: OkPacket | null) => {
+            if (err != null) {
+                reject(err.message); return;
+            }
+
+            if (result != null) {
+                if (result.affectedRows == 1) {
+                    resolve(null); return;
+                } else {
+                    reject('Unknown error 1 saving url to database.'); return
+                }
+            } else {
+                reject('Unknown error 2 saving url to database.'); return
+            }
+        });
+    }));
+};
+
+const saveDailyImage = async function saveDailyImage(email: string, dailyPic: string): Promise<null> {
+    return new Promise<null>(((resolve, reject) => {
+        const query = "INSERT INTO DailyPictures SET ?"
+
+        const insertImage = {
+            email: email,
+            dailyPic: dailyPic
+        }
+
+        connection.query(query, insertImage, (err: MysqlError | null, result: OkPacket | null) => {
+            if (err != null) {
+                reject(err.message); return;
+            }
+
+            if (result != null) {
+                if (result.affectedRows == 1) {
+                    resolve(null); return;
+                } else {
+                    reject('Unknown error 1 saving daily image to database.'); return
+                }
+            } else {
+                reject('Unknown error 2 saving daily image to database.'); return
+            }
+        });
+    }));
+};
+
+const getAccessToken = async function getAccessToken(email: string): Promise<string[]> {
+    return new Promise<string[]>(((resolve, reject) => {
+        const query = "SELECT * FROM AccessTokens WHERE email=" + connection.escape(email);
+
+        connection.query(query, (err: MysqlError | null, results: any[]) => {
+            if (err != null) {
+                reject(err.message); return;
+            }
+
+            const accessTokenArray: string[] = []
+
+            for (let result of results) {
+                if (result?.accessToken) {
+                    accessTokenArray.push(result.accessToken)
+                }
+            }
+
+            resolve(accessTokenArray); return;
+        });
+    }));
+};
+
+const getRefreshToken = async function getRefreshToken(email: string): Promise<string[]> {
+    return new Promise<string[]>(((resolve, reject) => {
+        const query = "SELECT * FROM RefreshTokens WHERE email=" + connection.escape(email);
+
+        connection.query(query, (err: MysqlError | null, results: any[]) => {
+            if (err != null) {
+                reject(err.message); return;
+            }
+
+            const refreshTokenArray: string[] = []
+
+            for (let result of results) {
+                if (result?.refreshToken) {
+                    refreshTokenArray.push(result.refreshToken)
+                }
+            }
+
+            resolve(refreshTokenArray); return;
+        });
+    }));
+};
+
+
 module.exports = {
     saveData: saveData,
     updateData: updateData,
@@ -424,4 +653,15 @@ module.exports = {
     getUsernameFromEmail: getUsernameFromEmail,
     getEmailFromUsername: getEmailFromUsername,
     getEmail: getEmail,
+    resetURLs: resetURLs,
+    resetDailyPics: resetDailyPics,
+    saveAccessToken: saveAccessToken,
+    saveRefreshToken: saveRefreshToken,
+    updateAccessToken: updateAccessToken,
+    updateRefreshToken: updateRefreshToken,
+    saveUrl: saveUrl,
+    saveDailyImage: saveDailyImage,
+    getAccessToken: getAccessToken,
+    getRefreshToken: getRefreshToken,
+
 }

@@ -22,6 +22,149 @@ router.post('/set-data', async (req: Request, res: Response, next: NextFunction)
     }
 });
 
+router.post('/set-accessToken', async (req: Request, res: Response, next: NextFunction) => {
+    const accessToken: string = req.body.data;
+    const email: string | undefined =  req.app.locals.user.email;
+
+    if (typeof  accessToken !== 'string') {
+        res.status(500).json({ error: 'The data must be a string.' }); return;
+    }
+
+    if (email === undefined) {
+        res.status(500).json({ error: 'You must sign in to do that' }); return;
+    }
+
+    try {
+        await data_functions.saveAccessToken(email, accessToken);
+        res.status(200).json({ success: 'The access token was submitted.' });
+    } catch (err) {
+        res.status(500).json({ error: err }); return;
+    }
+});
+
+router.post('/update-accessToken', async (req: Request, res: Response, next: NextFunction) => {
+    const accessToken: string = req.body.data;
+    const email: string | undefined =  req.app.locals.user.email;
+
+    if (typeof  accessToken !== 'string') {
+        res.status(500).json({ error: 'The data must be a string.' }); return;
+    }
+
+    if (email === undefined) {
+        res.status(500).json({ error: 'You must sign in to do that' }); return;
+    }
+
+    try {
+        await data_functions.updateAccessToken(email, accessToken);
+        res.status(200).json({ success: 'The access token was submitted.' });
+    } catch (err) {
+        res.status(500).json({ error: err }); return;
+    }
+});
+
+router.post('/set-refreshToken', async (req: Request, res: Response, next: NextFunction) => {
+    const accessToken: string = req.body.data;
+    const email: string | undefined =  req.app.locals.user.email;
+
+    if (typeof  accessToken !== 'string') {
+        res.status(500).json({ error: 'The data must be a string.' }); return;
+    }
+
+    if (email === undefined) {
+        res.status(500).json({ error: 'You must sign in to do that' }); return;
+    }
+
+    try {
+        await data_functions.saveRefreshToken(email, accessToken);
+        res.status(200).json({ success: 'The access token was submitted.' });
+    } catch (err) {
+        res.status(500).json({ error: err }); return;
+    }
+});
+
+router.post('/update-refreshToken', async (req: Request, res: Response, next: NextFunction) => {
+    const accessToken: string = req.body.data;
+    const email: string | undefined =  req.app.locals.user.email;
+
+    if (typeof  accessToken !== 'string') {
+        res.status(500).json({ error: 'The data must be a string.' }); return;
+    }
+
+    if (email === undefined) {
+        res.status(500).json({ error: 'You must sign in to do that' }); return;
+    }
+
+    try {
+        await data_functions.updateRefreshToken(email, accessToken);
+        res.status(200).json({ success: 'The access token was submitted.' });
+    } catch (err) {
+        res.status(500).json({ error: err }); return;
+    }
+});
+
+router.post('/set-url', async (req: Request, res: Response, next: NextFunction) => {
+    const url: string = req.body.url;
+    const email: string | undefined =  req.app.locals.user.email;
+
+    if (typeof  url !== 'string') {
+        // res.status(500).json({ error: 'The data must be a string.' }); return;
+        res.status(500).json({ error: `The data type is ${typeof url}` }); return;
+    }
+
+    if (email === undefined) {
+        res.status(500).json({ error: 'You must sign in to do that' }); return;
+    }
+
+    try {
+        await data_functions.saveUrl(email, url);
+        res.status(200).json({ success: 'The url was submitted.' });
+    } catch (err) {
+        res.status(500).json({ error: err }); return;
+    }
+});
+
+router.post('/set-dailypic', async (req: Request, res: Response, next: NextFunction) => {
+    const dailyPic: string = req.body.dailyPic;
+    const email: string | undefined =  req.app.locals.user.email;
+
+    if (typeof  dailyPic !== 'string') {
+        // res.status(500).json({ error: 'The data must be a string.' }); return;
+        res.status(500).json({ error: `The data type is ${typeof dailyPic}` }); return;
+    }
+
+    if (email === undefined) {
+        res.status(500).json({ error: 'You must sign in to do that' }); return;
+    }
+
+    try {
+        await data_functions.saveDailyImage(email, dailyPic);
+        res.status(200).json({ success: 'The daily picture was submitted.' });
+    } catch (err) {
+        res.status(500).json({ error: err }); return;
+    }
+});
+
+router.post('/set-dailypic', async (req: Request, res: Response, next: NextFunction) => {
+    const dailyPic: string = req.body.dailyPic;
+    const email: string | undefined =  req.app.locals.user.email;
+
+    if (typeof  dailyPic !== 'string') {
+        // res.status(500).json({ error: 'The data must be a string.' }); return;
+        res.status(500).json({ error: `The data type is ${typeof dailyPic}` }); return;
+    }
+
+    if (email === undefined) {
+        res.status(500).json({ error: 'You must sign in to do that' }); return;
+    }
+
+    try {
+        await data_functions.saveDailyImage(email, dailyPic);
+        res.status(200).json({ success: 'The daily picture was submitted.' });
+    } catch (err) {
+        res.status(500).json({ error: err }); return;
+    }
+});
+
 router.post('/update-data', async (req: Request, res: Response, next: NextFunction) => {
     const data: string = req.body.data;
     const email: string | undefined =  req.app.locals.user.email;
