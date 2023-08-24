@@ -539,6 +539,53 @@ const updateRefreshToken = async function updateRefreshToken(email: string, refr
     }));
 };
 
+const deleteRefreshToken = async function deleteRefreshToken(email: string): Promise<null> {
+    return new Promise<null>(((resolve, reject) => {
+
+        const query = "DELETE FROM RefreshTokens WHERE email=" + connection.escape(email);
+
+
+        connection.query(query, (err: MysqlError | null, result: OkPacket | null) => {
+            if (err != null) {
+                reject(err.message); return;
+            }
+
+            if(result?.affectedRows === 0) {
+                reject("You are not currently signed into spotify"); return;
+            }
+
+            if (result != null) {
+                resolve(null); return;
+            } else {
+                reject('Unknown error deleting refresh token'); return
+            }
+        });
+    }));
+};
+
+const deleteAccessToken = async function deleteAccessToken(email: string): Promise<null> {
+    return new Promise<null>(((resolve, reject) => {
+
+        const query = "DELETE FROM AccessTokens WHERE email=" + connection.escape(email);
+
+        connection.query(query, (err: MysqlError | null, result: OkPacket | null) => {
+            if (err != null) {
+                reject(err.message); return;
+            }
+
+            if(result?.affectedRows === 0) {
+                reject("You are not currently signed into spotify"); return;
+            }
+
+            if (result != null) {
+                resolve(null); return;
+            } else {
+                reject('Unknown error deleting access token'); return
+            }
+        });
+    }));
+};
+
 const saveUrl = async function saveUrl(email: string, url: string): Promise<null> {
     return new Promise<null>(((resolve, reject) => {
         const query = "INSERT INTO DailySongsUrl SET ?"
@@ -659,6 +706,8 @@ module.exports = {
     saveRefreshToken: saveRefreshToken,
     updateAccessToken: updateAccessToken,
     updateRefreshToken: updateRefreshToken,
+    deleteRefreshToken: deleteRefreshToken,
+    deleteAccessToken: deleteAccessToken,
     saveUrl: saveUrl,
     saveDailyImage: saveDailyImage,
     getAccessToken: getAccessToken,

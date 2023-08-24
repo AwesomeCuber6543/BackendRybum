@@ -102,6 +102,36 @@ router.post('/update-refreshtoken', async (req: Request, res: Response, next: Ne
     }
 });
 
+router.post('/delete-accesstoken', async (req: Request, res: Response, next: NextFunction) => {
+    const email: string | undefined =  req.app.locals.user.email;
+
+    if (email === undefined) {
+        res.status(500).json({ error: 'You must sign in to do that' }); return;
+    }
+
+    try {
+        await data_functions.deleteAccessToken(email);
+        res.status(200).json({ success: 'access token was Deleted' });
+    } catch (err) {
+        res.status(500).json({ error: err }); return;
+    }
+});
+
+router.post('/delete-refreshtoken', async (req: Request, res: Response, next: NextFunction) => {
+    const email: string | undefined =  req.app.locals.user.email;
+
+    if (email === undefined) {
+        res.status(500).json({ error: 'You must sign in to do that' }); return;
+    }
+
+    try {
+        await data_functions.deleteRefreshToken(email);
+        res.status(200).json({ success: 'refresh token was Deleted' });
+    } catch (err) {
+        res.status(500).json({ error: err }); return;
+    }
+});
+
 router.post('/set-url', async (req: Request, res: Response, next: NextFunction) => {
     const url: string = req.body.url;
     const email: string | undefined =  req.app.locals.user.email;
